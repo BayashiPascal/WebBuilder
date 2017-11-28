@@ -19,5 +19,10 @@ It offers the following functionalities:
 * Passing data from PHP to JS.
 * Image uploader on the server.
 
+To setup a minimal webpage based on WebBuilder:
+* Copy the files in this repo
+* Download jquery.min.js and add it to the JS folder
+* Set the base url into PHP/WebBuilderConf.php
+
 Documentation is available as a webpage made using WebBuilder at the following adress:
 http://www.bayashiinjapan.net/WebBuilder/
