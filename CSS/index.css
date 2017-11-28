@@ -1,0 +1,48 @@
+/* ============= index.css =========== */
+
+.divTileTitle {
+  font-size: 16px;
+  color: #ff2222;
+  margin: 5px;
+}
+
+.divTileMainTxt {
+  font-size: 14px;
+  color: #000000;
+  text-align: left;
+  padding: 5px;
+}
+
+.spanCode {
+  
+}
+
+.imgPreload {
+  width: 100px;
+  margin: 5px;
+}
+
+.imgIcon {
+  width: 50px;
+  margin: 1px;
+}
+
+#divAnimate {
+  display: inline-txt;
+}
+
+.pageflipbook {
+  width: 142px;
+  height: 200px;
+}
+
+xmp {
+  font-size: 12px;
+  margin: 0;
+}
+
+.soundLink {
+  color: black;
+  text-decoration: none;
+  cursor: default;
+}
