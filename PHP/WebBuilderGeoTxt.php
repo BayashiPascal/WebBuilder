@@ -3,7 +3,7 @@
   if (isset($WBDico) == false || 
     $WebBuilderConf["RefreshDico"] == true) {
 
-    $WBDico = array('en', 'jp', 'fr');
+    $WBDico = array('en', 'ja', 'fr');
     foreach ($WBDico as $key => $lang) {
       $WBDico[$lang] = array();
     }
@@ -13,7 +13,7 @@
     // argument 'param' of WebBuilder.GetText
 
     $WBDico['en']['example'] = 'This is an example';
-    $WBDico['jp']['example'] = '例文です';
+    $WBDico['ja']['example'] = '例文です';
     $WBDico['fr']['example'] = 'Voici un exemple';
 
   }

@@ -123,7 +123,7 @@ function BuildGeoText($theWB) {
     FormatCode('WebBuilderConf.php') . ', and if not available in the 
     default language too, its label is displayed instead.<br>';
   $block .= 'Example <a href="?la=en">in english</a>, <a 
-    href="?la=fr">in french</a>, <a href="?la=jp">in 
+    href="?la=fr">in french</a>, <a href="?la=ja">in 
     japanese</a>:<br>';
   $block .= $theWB->GetTxt('example') . '<br>';
   $block .= 'The language is defined at PHP level and cannot be 
