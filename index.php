@@ -14,7 +14,7 @@
   $var["date"] = date("Y-m-d"); $theWB->SetJSData($var);
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?php echo $theWB->GetLang(); ?>">
   <head>
 <?php 
     echo $theWB->BuildMeta();
@@ -32,8 +32,53 @@
 
     echo $theWB->BuildDivTitle('divTitle', 'WebBuilder');
 
-    $divExample = 'You\'re ready to create your webpage using WebBuilder !';
-    echo $theWB->BuildDivTile('divExample', $divExample);
+    $divUsage = BuildUsage($theWB);
+    echo $theWB->BuildDivTile('divUsage', $divUsage);
+
+    $divError = BuildError($theWB);
+    echo $theWB->BuildDivTile('divError', $divError);
+
+    $divGeoText = BuildGeoText($theWB);
+    echo $theWB->BuildDivTile('divGeoText', $divGeoText);
+
+    $divMode = BuildMode($theWB);
+    echo $theWB->BuildDivTile('divMode', $divMode);
+
+    $divDOM = BuildDOM($theWB);
+    echo $theWB->BuildDivTile('divDOM', $divDOM);
+
+    $divHeader = BuildHeader($theWB);
+    echo $theWB->BuildDivTile('divHeader', $divHeader);
+
+    $divURLArg = BuildURLArg($theWB);
+    echo $theWB->BuildDivTile('divURLArg', $divURLArg);
+
+    $divExecOnServer = BuildExecOnServer($theWB);
+    echo $theWB->BuildDivTile('divExecOnServer', $divExecOnServer);
+
+    $divCountryFromIP = BuildCountryFromIP($theWB);
+    echo $theWB->BuildDivTile('divCountryFromIP', $divCountryFromIP);
+
+    $divDB = BuildDB($theWB);
+    echo $theWB->BuildDivTile('divDB', $divDB);
+
+    $divHTTPRequest = BuildHTTPRequest($theWB);
+    echo $theWB->BuildDivTile('divHTTPRequest', $divHTTPRequest);
+
+    $divImgPreloader = BuildImgLoader($theWB);
+    echo $theWB->BuildDivTile('divImgPreloader', $divImgPreloader);
+
+    $divIcons = BuildIcons($theWB);
+    echo $theWB->BuildDivTile('divIcons', $divIcons);
+
+    $divExternLib = BuildExternLib($theWB);
+    echo $theWB->BuildDivTile('divExternLib', $divExternLib);
+
+    $divPHPtoJS = BuildPHPtoJS($theWB);
+    echo $theWB->BuildDivTile('divPHPtoJS', $divPHPtoJS);
+
+    $divImgUpload = BuildImgUpload($theWB);
+    echo $theWB->BuildDivTile('divImgUpload', $divImgUpload);
 
     echo $theWB->BuildDivFooter('divFooter', 
       'WebBuilder - Developper: P. Baillehache');
