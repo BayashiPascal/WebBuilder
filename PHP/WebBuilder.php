@@ -465,7 +465,7 @@ class WebBuilder {
           $argBind = array();
           $argBind[] = $stmt;
           $argBind[] = $types;
-          $argBind = array_merge($argBind, $param);
+          $argBind = array_merge($argBind, $params);
           call_user_func_array('mysqli_stmt_bind_param', $argBind);
         }
         if (!$stmt->execute()) {
