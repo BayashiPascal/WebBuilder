@@ -363,16 +363,23 @@ function BuildHTTPRequest($theWB) {
   $block .= 'HTTPRequest';
   $block .= '</div>';
   $block .= '<div class="divTileMainTxt">';
-  $block .= 'A HTTP request toward an API returning JSON data can be 
-    summoned through the code:<br>' . 
+  $block .= 'A HTTP GET request toward an API returning JSON data can  
+    be summoned through the code:<br>' . 
     FormatCode('theWB.HTTPGetRequest(url, handler);') . '<br>The 
-    hanlder has one argument, an object containing the decoded JSON 
+    handler has one argument, an object containing the decoded JSON 
     data. For example, request a random chuck joke from <a 
     href="https://api.chucknorris.io" 
     target="_blank">api.chucknorris.io</a>:<br><div id="divChuck" 
     style="text-align:center;"><img id="imgChuck" 
     src="./Img/waiting.gif" alt=""><br><div 
     id="divTitleChuck"></div></div>';
+  $block .= 'A HTTP POST request toward an API returning JSON data can  
+    be summoned through the code:<br>' . 
+    FormatCode('theWB.HTTPPOStRequest(url, form, handler);') . 
+    '<br>The "form" arguments is the form element in the DOM 
+    containing the form data to be sent. The 
+    handler has one argument, an object containing the decoded JSON 
+    data. ';
   $block .= '</div>';
   return $block;
 }
