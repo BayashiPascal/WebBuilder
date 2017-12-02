@@ -53,6 +53,42 @@ WebBuilder.prototype.HTTPGetRequest = function(url, handler) {
   }
 }
 
+// ------------ HTTP Post request
+
+WebBuilder.prototype.HTTPPostRequest = function(url, form, handler) {
+  try {
+    // Create the request object
+    if (window.XMLHttpRequest) {
+      var xhr = new XMLHttpRequest();
+    } else {
+      var xhr = new ActiveXObject('Microsoft.XMLHTTP');
+    }
+    // Hook for the reply
+    xhr._handler = handler;
+    xhr.onreadystatechange = function() {
+      // If the request is ready
+      if (xhr.readyState == 4) {
+        if (xhr.status == 200) {
+          // The request was successful, return the reply data
+          var returnedData = JSON.parse(xhr.responseText);
+        } else {
+          // The request failed, return error as JSON
+          var returnedData = 
+            JSON.parse('{"err":"HTTPRequest failed : ' + 
+              xhr.status + '"}');
+        }
+        this._handler(returnedData);
+      }
+    };
+    // Send the request
+    xhr.open("POST",url);
+    var formData = new FormData(form);
+    xhr.send(formData);
+  } catch (err) {
+    console.log("WebBuilder.HTTPGetRequest " + err.stack);
+  }
+}
+
 // ------------ Function to set the handler for HTTP request
 
 WebBuilder.prototype.SetHandlerHTTPRequest = function(handler) {
