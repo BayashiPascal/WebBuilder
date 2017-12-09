@@ -31,7 +31,6 @@ class WBException extends Exception {
     $this->_origin = $origin;
     $this->_email = $email;
     $this->_msg = $msg;
-    //parent::__construct($msg, $code, $previous);
     parent::__construct($msg, $code);
   }
 }
@@ -50,7 +49,15 @@ class WebBuilder {
     $this->_config = $conf;
     $this->_dico = $dico;
     if (isset($_SESSION['WBLANG']) == false) {
-      $_SESSION['WBLANG'] = $conf['DefaultLang'];
+      $country = $this->GetCountryFromIP();
+      if ($country != '??') {
+        $this->SetLang($country);
+        if ($_SESSION['WBLANG'] == '') {
+          $_SESSION['WBLANG'] = $conf['DefaultLang'];
+        }
+      } else {
+        $_SESSION['WBLANG'] = $conf['DefaultLang'];
+      }
     }
     $this->_lang = $_SESSION['WBLANG'];
     if (isset($_SESSION['WBMODE']) == false) {
@@ -66,10 +73,16 @@ class WebBuilder {
 
   }
 
-  public function SetLang($v) {
-    if (isset($this->_dico[$v]) == true) {
-      $this->_lang = $v;
-      $_SESSION['WBLANG'] = $v;
+  public function SetLang($lang) {
+    $lang = strtolower($lang);
+    // Convert from country code to language
+    // http://www.nationsonline.org/oneworld/country_code_list.htm
+    if ($lang == 'au') $lang = 'en';
+    if ($lang == 'ca') $lang = 'en';
+    if ($lang == 'us') $lang = 'en';
+    if (isset($this->_dico[$lang]) == true) {
+      $this->_lang = $lang;
+      $_SESSION['WBLANG'] = $lang;
     }
   }
   
@@ -240,8 +253,8 @@ class WebBuilder {
     return json_encode(ExecCmdOnServer($cmd));
   }
 
-  // Get the country code (ex. 'FR') from the IP
-  public function GetCountryFromIP() {
+  // Get Info from IP adress, returned as JSON
+  public function GetIPInfo() {
     $client  = '';
     $forward = '';
     $remote  = '';
@@ -254,7 +267,6 @@ class WebBuilder {
     if (isset($_SERVER['REMOTE_ADDR']) == true) {
       $remote  = $_SERVER['REMOTE_ADDR'];
     }
-    $country  = "??";
     if (filter_var($client, FILTER_VALIDATE_IP)) {
       $ip = $client;
     } else if (filter_var($forward, FILTER_VALIDATE_IP)) {
@@ -262,12 +274,28 @@ class WebBuilder {
     } else {
       $ip = $remote;
     }
-    $ip_data = @json_decode(file_get_contents(
-      "http://www.geoplugin.net/json.gp?ip=" . $ip));    
-    if ($ip_data && $ip_data->geoplugin_countryName != null) {
-      $country = $ip_data->geoplugin_countryCode;
+    $ip_data = file_get_contents(
+      "http://www.geoplugin.net/json.gp?ip=" . $ip);
+    if ($ip_data === FALSE) {
+      $ip_data = '{';
+      $ip_data .= '"geoplugin_request":"' . $ip . '",';
+      $ip_data .= '"geoplugin_status":400,';
+      $ip_data .= '"geoplugin_city":"Unknown",';
+      $ip_data .= '"geoplugin_region":"Unknown",';
+      $ip_data .= '"geoplugin_countryCode":"??",';
+      $ip_data .= '"geoplugin_countryName":"Unknown",';
+      $ip_data .= '"geoplugin_continentCode":"??",';
+      $ip_data .= '"geoplugin_latitude":"0.0",';
+      $ip_data .= '"geoplugin_longitude":"0.0"';
+      $ip_data .= '}';
     }
-    return $country;
+    return $ip_data;
+  }
+
+  // Get the country code (ex. 'FR') from the IP
+  public function GetCountryFromIP() {
+    $ip_data = json_decode($this->GetIPInfo()); 
+    return $ip_data->geoplugin_countryCode;
   }
 
   // Connect to the database
@@ -520,6 +548,46 @@ class WebBuilder {
     return $block;
   }
 
+  public function LogAccess() {
+    if (isset($_SESSION['WBACCESSTRACKREF']) === false) {
+      $datetime = date('Y-m-d H:i:s');
+      $ip_data = GetIPInfo();
+      if (isset($_SERVER['HTTP_ORIGIN'])) {
+        $referer = $_SERVER['HTTP_ORIGIN'];
+      }
+      else if (isset($_SERVER['HTTP_REFERER'])) {
+        $referer = $_SERVER['HTTP_REFERER'];
+      } else {
+        $referer = "";
+      }
+      $uri = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+      $sql = "INSERT INTO WebData.WBAccessTracker 
+        (DateTime, RefererIP, HTTP_REFERER, 
+        HTTP_USER_AGENT, REQUEST_URI) VALUES ('" . 
+        $datetime . "', ?, ?, ?, ?);";
+      $this->ConnectDB();
+      $stmt = $this->_DBconn->stmt_init();
+      if (!$stmt->prepare($sql)) {
+        throw new Exception(
+          "Prepare statement failed for log access. " .
+          $stmt->error);
+      }
+      if (!$stmt->bind_param('ssss', $ip_data, 
+        $referer, $_SERVER['HTTP_USER_AGENT'], $uri)) {
+        throw new Exception(
+          "Bind statement failed for log access. " .
+          $stmt->error);
+      }
+      if (!$stmt->execute()) {
+        throw new Exception(
+          "Execute statement failed for log access. " .
+          $stmt->error);
+      }
+      $_SESSION['WBACCESSTRACKREF'] = $conn->insert_id;
+      $stmt->close();
+      $this->CloseDB();
+    }
+  }
 };
 
 // Create the global instance of the WebBuilder
