@@ -126,10 +126,12 @@ function BuildGeoText($theWB) {
     href="?la=fr">in french</a>, <a href="?la=ja">in 
     japanese</a>:<br>';
   $block .= $theWB->GetTxt('example') . '<br>';
+  $block .= 'The language is first initialized with the location of 
+    the visitor (based on IP address) when he arrives on the page.<br>';
   $block .= 'The language is defined at PHP level and cannot be 
     modified via JavaScript.<br>';
-  $block .= 'It is based on URL argument ' . FormatCode('la') . '. 
-    See also "URL arguments".<br>';
+  $block .= 'It can be changed by URL argument ' . 
+    FormatCode('la') . '. See also "URL arguments".<br>';
   $block .= '</div>';
   return $block;
 }
