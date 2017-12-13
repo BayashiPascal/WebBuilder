@@ -80,3 +80,82 @@ ul {
   padding: 5px;
 }
 
+.divWBGauge {
+
+}
+
+.divWBHisto {
+  position: relative;
+  top: 0px;
+  left: 0px;
+  border: 1px solid rgba(0, 0, 0, 1);
+}
+
+.divWBHistoSample {
+  position: absolute;
+  text-align: center;
+  border: 1px solid rgba(0, 0, 0, 1);
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.divWBGauge {
+  background-color:rgba(255, 255, 255, 0.0);
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 1);
+  position: relative;
+  top: 0px;
+  left: 0px;
+  color: transparent;
+}
+
+.divWBGaugeBack {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  z-index: 0;
+  background-color: rgba(255, 0, 0, 1);
+}
+
+.divWBGaugeFront {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 1;
+  background-color: rgba(0, 0, 0, 0);
+  color: rgb(0, 0, 0);
+}
+
+.divWBAccessMap {
+  width: 350px;
+  height: 200px;
+  background-image: url('../Img/map.jpg');
+  background-size: 100% 100%;
+  position: relative;
+  top: 0;
+  left: 0;
+  margin: auto;
+}
+
+.divWBAccessMap img {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  content: url('../Img/Icons/yellowDot.png');
+}
+
+.divWBAccessTileTitle {
+  padding: 5px;
+  font-weight: bold;
+}
+
+.divWBAccessTileContent {
+  padding: 5px;
+  text-align: left;
+}
+
+.divWBAccessTileSubContent {
+  padding: 15px;
+  text-align: left;
+}
+
