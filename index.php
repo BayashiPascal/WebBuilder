@@ -80,6 +80,9 @@
     $divImgUpload = BuildImgUpload($theWB);
     echo $theWB->BuildDivTile('divImgUpload', $divImgUpload);
 
+    $divAccess = BuildAccess($theWB);
+    echo $theWB->BuildDivTile('divAccessTile', $divAccess);
+
     echo $theWB->BuildDivFooter('divFooter', 
       'WebBuilder - Developper: P. Baillehache');
 ?>
