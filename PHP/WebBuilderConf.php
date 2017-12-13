@@ -7,18 +7,19 @@ require('WebBuilderDBConf.php');
 $WebBuilderConf = array(
   // General
   'SiteName' => 'WebBuilder',
-  'DebugMode' => true,  // true or false
+  'DebugMode' => false,  // true or false
   'RefreshDico' => false,  // true or false
-  'DeveloperEmail' => 'xxx',
+  'DeveloperEmail' => 'Pascal@BayashiInJapan.net',
   'DefaultLang' => 'en',
   'DefaultMode' => '0',
   'AvailableModes' => array('0', '1'),
   'TimeZone' => 'Asia/Tokyo',
+  'AccessStat' => false,
 
   // Header
-  'BaseURL' => 'http://your.website.net/WebBuilder/',
-  'MetaDescription' => '',
-  'MetaKeywords' => '',
+  'BaseURL' => 'http://localhost/WebBuilder/',
+  'MetaDescription' => 'Main page of the WebBuilder framework',
+  'MetaKeywords' => 'WebBuilder, PHP, MySQL, JavaScript, framework',
   'MetaViewportWidth' => 'device-width',
   'IncludeCSS' => array('index.css'),
   'IncludeJS' => array('index.js'),
@@ -34,6 +35,25 @@ $WebBuilderConf = array(
       'Reference' => 'INT UNSIGNED AUTO_INCREMENT PRIMARY KEY',
       'DateCmd' => 'DATETIME',
       'Val' => 'CHAR(10) character set utf8 collate utf8_bin'
+      )
+    )
+  ),
+  'DBModelStat' => array( 'tables' => array(
+    'WBAccessTracker' => array(
+      'Reference' => 'INT UNSIGNED AUTO_INCREMENT PRIMARY KEY',
+      'DateTime' => 'DATETIME NOT NULL',
+      'RefererIP' => 'TEXT character set utf8 collate utf8_bin',
+      'HTTP_REFERER' => 
+        'TEXT character set utf8 collate utf8_bin',
+      'HTTP_USER_AGENT' => 
+        'TEXT character set utf8 collate utf8_bin',
+      'REQUEST_URI' => 
+        'TEXT character set utf8 collate utf8_bin',
+      'City' => 'TEXT character set utf8 collate utf8_bin',
+      'Region' => 'TEXT character set utf8 collate utf8_bin',
+      'Country' => 'TEXT character set utf8 collate utf8_bin',
+      'LongLat' => 'TEXT character set utf8 collate utf8_bin',
+      'Robot' => 'BOOL NOT NULL DEFAULT false'
       )
     )
   )
