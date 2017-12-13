@@ -530,4 +530,21 @@ function BuildImgUpload($theWB) {
   return $block;
 }
 
+function BuildAccess($theWB) {
+  $block = '';
+  $block .= '<div class="divTileTitle">';
+  $block .= 'Tracking of access to the webpage';
+  $block .= '</div>';
+  $block .= '<div class="divTileMainTxt">';
+  $block .= 'Statistics about access to the webpage can be logged automatically in the database by setting the value of ' . FormatCode('AccessStat') . ' to ' . FormatCode('true') . ' in the configuration file. A default tile displaying these statistics is also available through the method ' . FormatCode('$theWB->BuildAccessTile($id, 
+    $url, $dateStart, $dateEnd)') . '. An example of this method for records of the last 31 days for the current page is given below.<br><br>';
+  $block .= '</div>';
+  $dateEnd = date('Y-m-d');
+  $dateStart = date('Y-m-d', strtotime($dateEnd . ' -31 day'));
+  $dateEnd .= ' 23:59:59';
+  $block .= $theWB->BuildAccessTile('divAccess', 
+    'www.bayashiinjapan.net/WebBuilder/', $dateStart, $dateEnd);
+  return $block;
+}
+
 ?>

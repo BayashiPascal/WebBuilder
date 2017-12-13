@@ -31,6 +31,7 @@ class WBException extends Exception {
     $this->_origin = $origin;
     $this->_email = $email;
     $this->_msg = $msg;
+    //parent::__construct($msg, $code, $previous);
     parent::__construct($msg, $code);
   }
 }
@@ -49,15 +50,7 @@ class WebBuilder {
     $this->_config = $conf;
     $this->_dico = $dico;
     if (isset($_SESSION['WBLANG']) == false) {
-      $country = $this->GetCountryFromIP();
-      if ($country != '??') {
-        $this->SetLang($country);
-        if ($_SESSION['WBLANG'] == '') {
-          $_SESSION['WBLANG'] = $conf['DefaultLang'];
-        }
-      } else {
-        $_SESSION['WBLANG'] = $conf['DefaultLang'];
-      }
+      $this->SetDefaultLang($conf['DefaultLang']);
     }
     $this->_lang = $_SESSION['WBLANG'];
     if (isset($_SESSION['WBMODE']) == false) {
@@ -67,22 +60,106 @@ class WebBuilder {
     $this->_DBconn = null;
     date_default_timezone_set($conf['TimeZone']);
     $this->_JSdata = '{}';
+    // Log access
+    if ($conf['AccessStat'] == true) {
+      $this->LogAccess();
+    }
+
   }
   
   function __destruct() {
 
   }
 
-  public function SetLang($lang) {
-    $lang = strtolower($lang);
-    // Convert from country code to language
-    // http://www.nationsonline.org/oneworld/country_code_list.htm
-    if ($lang == 'au') $lang = 'en';
-    if ($lang == 'ca') $lang = 'en';
-    if ($lang == 'us') $lang = 'en';
-    if (isset($this->_dico[$lang]) == true) {
-      $this->_lang = $lang;
-      $_SESSION['WBLANG'] = $lang;
+  private function SetDefaultLang($def) {
+    // Get the user location from his IP address
+    // and set the default language to this country
+    $userCountry = $this->GetCountryFromIP();
+    if (strtolower($userCountry) == 'jp') {
+      $_SESSION['WBLANG'] = 'jp';
+    } else if (strtolower($userCountry) == 'gb' ||
+      strtolower($userCountry) == 'us' ||
+      strtolower($userCountry) == 'au' ||
+      strtolower($userCountry) == 'ca' ||
+      strtolower($userCountry) == 'ie' ||
+      strtolower($userCountry) == 'nz' ||
+      strtolower($userCountry) == 'ag' ||
+      strtolower($userCountry) == 'bs' ||
+      strtolower($userCountry) == 'bb' ||
+      strtolower($userCountry) == 'bz' ||
+      strtolower($userCountry) == 'dm' ||
+      strtolower($userCountry) == 'gd' ||
+      strtolower($userCountry) == 'gy' ||
+      strtolower($userCountry) == 'jm' ||
+      strtolower($userCountry) == 'kn' ||
+      strtolower($userCountry) == 'lc' ||
+      strtolower($userCountry) == 'vc' ||
+      strtolower($userCountry) == 'tt') {
+      $_SESSION['WBLANG'] = 'en';
+    } else if (strtolower($userCountry) == 'cn' ||
+      strtolower($userCountry) == 'tw' ||
+      strtolower($userCountry) == 'hk' ||
+      strtolower($userCountry) == 'mo' ||
+      strtolower($userCountry) == 'sg') {
+      $_SESSION['WBLANG'] = 'cn';
+    } else if (strtolower($userCountry) == 'fr' ||
+      strtolower($userCountry) == 'be' ||
+      strtolower($userCountry) == 'ch' ||
+      strtolower($userCountry) == 'bj' ||
+      strtolower($userCountry) == 'bf' ||
+      strtolower($userCountry) == 'bi' ||
+      strtolower($userCountry) == 'cm' ||
+      strtolower($userCountry) == 'td' ||
+      strtolower($userCountry) == 'km' ||
+      strtolower($userCountry) == 'cd' ||
+      strtolower($userCountry) == 'dj' ||
+      strtolower($userCountry) == 'ga' ||
+      strtolower($userCountry) == 'gn' ||
+      strtolower($userCountry) == 'ht' ||
+      strtolower($userCountry) == 'ci' ||
+      strtolower($userCountry) == 'lu' ||
+      strtolower($userCountry) == 'mg' ||
+      strtolower($userCountry) == 'ml' ||
+      strtolower($userCountry) == 'mc' ||
+      strtolower($userCountry) == 'ne' ||
+      strtolower($userCountry) == 'rw' ||
+      strtolower($userCountry) == 'sn' ||
+      strtolower($userCountry) == 'sc' ||
+      strtolower($userCountry) == 'tg' ||
+      strtolower($userCountry) == 'vu') {
+      $_SESSION['WBLANG'] = 'fr';
+    } else if (strtolower($userCountry) == 'kr') {
+      $_SESSION['WBLANG'] = 'kr';
+    } else if (strtolower($userCountry) == 'es' ||
+      strtolower($userCountry) == 'ar' ||
+      strtolower($userCountry) == 'bo' ||
+      strtolower($userCountry) == 'cl' ||
+      strtolower($userCountry) == 'co' ||
+      strtolower($userCountry) == 'cr' ||
+      strtolower($userCountry) == 'cu' ||
+      strtolower($userCountry) == 'do' ||
+      strtolower($userCountry) == 'ec' ||
+      strtolower($userCountry) == 'sv' ||
+      strtolower($userCountry) == 'gq' ||
+      strtolower($userCountry) == 'gt' ||
+      strtolower($userCountry) == 'hn' ||
+      strtolower($userCountry) == 'mx' ||
+      strtolower($userCountry) == 'ni' ||
+      strtolower($userCountry) == 'pa' ||
+      strtolower($userCountry) == 'py' ||
+      strtolower($userCountry) == 'pe' ||
+      strtolower($userCountry) == 'uy' ||
+      strtolower($userCountry) == 've') {
+      $_SESSION['WBLANG'] = 'sp';
+    } else {
+      $_SESSION['WBLANG'] = $def;
+    }
+  }
+
+  public function SetLang($v) {
+    if (isset($this->_dico[$v]) == true) {
+      $this->_lang = $v;
+      $_SESSION['WBLANG'] = $v;
     }
   }
   
@@ -233,7 +310,10 @@ class WebBuilder {
       $this->SetMode($_GET["mo"]);
     }
     if (isset($_GET["setupdb"]) == true) {
-      $this->CreateDB();
+      $this->CreateDB('DBModel');
+      if ($this->_config['AccessStat'] == true) {
+        $this->CreateDB('DBModelStat');
+      }
     }
   }
   
@@ -345,8 +425,8 @@ class WebBuilder {
   }
 
   // Auto create the DB
-  private function CreateDB() {
-    foreach ($this->_config['DBModel']['tables'] as 
+  private function CreateDB($model) {
+    foreach ($this->_config[$model]['tables'] as 
       $table => $tableDef) {
       if ($this->IsTableInDB($table) == false) {
         $flagCreateTable = true;
@@ -471,6 +551,7 @@ class WebBuilder {
         ' for SQL command "' . $sql . '"');
     }
     $stmt->close();
+    $this->_insert_id = $this->_DBconn->insert_id;
     $this->CloseDB();
   }
   
@@ -548,10 +629,22 @@ class WebBuilder {
     return $block;
   }
 
+  private function IsAgentRobot($agent) {
+    if (strpos(strtolower($agent), 'bot') !== FALSE ||
+      strpos(strtolower($agent), 'crawl') !== FALSE ||
+      strpos(strtolower($agent), 'slurp') !== FALSE ||
+      strpos(strtolower($agent), 'spider') !== FALSE ||
+      strpos(strtolower($agent), 'mediapartners') !== FALSE) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   public function LogAccess() {
     if (isset($_SESSION['WBACCESSTRACKREF']) === false) {
       $datetime = date('Y-m-d H:i:s');
-      $ip_data = GetIPInfo();
+      $ip_data = json_decode($this->GetIPInfo());
       if (isset($_SERVER['HTTP_ORIGIN'])) {
         $referer = $_SERVER['HTTP_ORIGIN'];
       }
@@ -560,34 +653,308 @@ class WebBuilder {
       } else {
         $referer = "";
       }
+      $longlat = $ip_data->geoplugin_longitude . ',' . 
+        $ip_data->geoplugin_latitude;
       $uri = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-      $sql = "INSERT INTO WebData.WBAccessTracker 
-        (DateTime, RefererIP, HTTP_REFERER, 
-        HTTP_USER_AGENT, REQUEST_URI) VALUES ('" . 
-        $datetime . "', ?, ?, ?, ?);";
-      $this->ConnectDB();
-      $stmt = $this->_DBconn->stmt_init();
-      if (!$stmt->prepare($sql)) {
-        throw new Exception(
-          "Prepare statement failed for log access. " .
-          $stmt->error);
-      }
-      if (!$stmt->bind_param('ssss', $ip_data, 
-        $referer, $_SERVER['HTTP_USER_AGENT'], $uri)) {
-        throw new Exception(
-          "Bind statement failed for log access. " .
-          $stmt->error);
-      }
-      if (!$stmt->execute()) {
-        throw new Exception(
-          "Execute statement failed for log access. " .
-          $stmt->error);
-      }
-      $_SESSION['WBACCESSTRACKREF'] = $conn->insert_id;
-      $stmt->close();
-      $this->CloseDB();
+      $robot = ($this->IsAgentRobot($_SERVER['HTTP_USER_AGENT']) ? 
+        'TRUE' : 'FALSE');
+      $this->ExecInsertSQL('WBAccessTracker', 
+        array('DateTime', 'RefererIP', 'City', 'Country', 'LongLat',
+        'HTTP_REFERER', 'HTTP_USER_AGENT', 'REQUEST_URI', 'Robot'), 
+        'sssssssss', array($datetime, $ip_data->geoplugin_request, 
+        $ip_data->geoplugin_city, $ip_data->geoplugin_countryName, 
+        $longlat, $referer, $_SERVER['HTTP_USER_AGENT'], $uri, $robot));
+      $_SESSION['WBACCESSTRACKREF'] = $this->_insert_id;
     }
   }
+
+  public function GetNbAccess($domain, $since, $until) {
+    $sql = 'SELECT COUNT(*) FROM WBAccessTracker ';
+    $sql .= 'WHERE REQUEST_URI LIKE ? AND DateTime >= ? ';
+    $sql .= 'AND DateTime <= ? AND Robot = FALSE ';
+    $cols = array('nb');
+    $types = 'sss';
+    $d = $domain . '%';
+    $params = array(&$d, &$since, &$until);
+    $res = $this->ExecSelectSQL($sql, $cols, $types, $params);
+    return $res[0]['nb'];
+  }
+
+  public function GetAccessRankCountry($domain, $since, $until) {
+    $sql = 'SELECT Country, COUNT(*) as c FROM WBAccessTracker ';
+    $sql .= 'WHERE REQUEST_URI LIKE ? AND DateTime >= ? ';
+    $sql .= 'AND DateTime <= ? AND Robot = FALSE ';
+    $sql .= 'GROUP BY Country ORDER BY c DESC ';
+    $cols = array('country', 'nb');
+    $types = 'sss';
+    $d = $domain . '%';
+    $params = array(&$d, &$since, &$until);
+    $res = $this->ExecSelectSQL($sql, $cols, $types, $params);
+    return $res;
+  }
+
+  public function GetAccessRankCity($domain, $since, $until) {
+    $sql = 'SELECT Country, Region, City, COUNT(*) as c FROM WBAccessTracker ';
+    $sql .= 'WHERE REQUEST_URI LIKE ? AND DateTime >= ? ';
+    $sql .= 'AND DateTime <= ? AND Robot = FALSE ';
+    $sql .= 'GROUP BY City, Region, Country ORDER BY c DESC ';
+    $cols = array('country', 'region', 'city', 'nb');
+    $types = 'sss';
+    $d = $domain . '%';
+    $params = array(&$d, &$since, &$until);
+    $res = $this->ExecSelectSQL($sql, $cols, $types, $params);
+    return $res;
+  }
+
+  public function GetAccessRankReferer($domain, $since, $until) {
+    $sql = 'SELECT HTTP_REFERER, COUNT(*) as c FROM WBAccessTracker ';
+    $sql .= 'WHERE REQUEST_URI LIKE ? AND DateTime >= ? ';
+    $sql .= 'AND DateTime <= ? AND Robot = FALSE ';
+    $sql .= 'GROUP BY HTTP_REFERER ORDER BY c DESC ';
+    $cols = array('referer', 'nb');
+    $types = 'sss';
+    $d = $domain . '%';
+    $params = array(&$d, &$since, &$until);
+    $res = $this->ExecSelectSQL($sql, $cols, $types, $params);
+    return $res;
+  }
+
+  public function GetAccessRankAgent($domain, $since, $until) {
+    $sql = 'SELECT HTTP_USER_AGENT, COUNT(*) as c ';
+    $sql .= 'FROM WBAccessTracker ';
+    $sql .= 'WHERE REQUEST_URI LIKE ? AND DateTime >= ? ';
+    $sql .= 'AND DateTime <= ? AND Robot = FALSE ';
+    $sql .= 'GROUP BY HTTP_USER_AGENT ';
+    $sql .= 'ORDER BY c DESC ';
+    $cols = array('agent', 'nb');
+    $types = 'sss';
+    $d = $domain . '%';
+    $params = array(&$d, &$since, &$until);
+    $res = $this->ExecSelectSQL($sql, $cols, $types, $params);
+    return $res;
+  }
+
+  public function GetNbAccessByBot($domain, $since, $until) {
+    $sql = 'SELECT COUNT(*) as c ';
+    $sql .= 'FROM WBAccessTracker ';
+    $sql .= 'WHERE REQUEST_URI LIKE ? AND DateTime >= ? ';
+    $sql .= 'AND DateTime <= ? AND Robot = TRUE';
+    $cols = array('nb');
+    $types = 'sss';
+    $d = $domain . '%';
+    $params = array(&$d, &$since, &$until);
+    $res = $this->ExecSelectSQL($sql, $cols, $types, $params);
+    return $res[0]['nb'];
+  }
+
+  public function GetAccessLongLat($domain, $since, $until) {
+    $sql = 'SELECT LongLat ';
+    $sql .= 'FROM WBAccessTracker ';
+    $sql .= 'WHERE REQUEST_URI LIKE ? AND DateTime >= ? ';
+    $sql .= 'AND DateTime <= ? AND Robot = FALSE';
+    $cols = array('longlat');
+    $types = 'sss';
+    $d = $domain . '%';
+    $params = array(&$d, &$since, &$until);
+    $res = $this->ExecSelectSQL($sql, $cols, $types, $params);
+    return $res;
+  }
+
+  public function GetAccessByDay($domain, $since, $until) {
+    $sql = 'SELECT DATE(DateTime), COUNT(*) ';
+    $sql .= 'FROM WBAccessTracker ';
+    $sql .= 'WHERE REQUEST_URI LIKE ? AND DateTime >= ? ';
+    $sql .= 'AND DateTime <= ? AND Robot = FALSE ';
+    $sql .= 'GROUP BY DATE(DateTime) ORDER BY DATE(DateTime) ASC';
+    $cols = array('date', 'nb');
+    $types = 'sss';
+    $d = $domain . '%';
+    $params = array(&$d, &$since, &$until);
+    $res = $this->ExecSelectSQL($sql, $cols, $types, $params);
+    return $res;
+  }
+
+  // Function to create a horyzontal gauge
+  // ratio in [0, 1]
+  public function BuildGaugeHoriz($id, $label, $width, $ratio) {
+    $block = '';
+    $block .= '<div id="' . $id . 
+      '" class="divWBGauge" style="width:' . $width . 'px;">';
+    $block .= '<div class="divWBGaugeBack" style="width:' . 
+      ($ratio * 100) . '%;">';
+    $block .= '</div>';
+    $block .= '<div class="divWBGaugeFront" 
+      style="width:' . $width . 'px;">';
+    $block .= $label;
+    $block .= '</div>';
+    $block .= $label;
+    $block .= '</div>';
+    return $block;
+  }
+
+  // Function to create a horizontal histogram of dimension width, height
+  // data = array() of values in order from left to right
+  public function BuildHisto($id, $data, $width, $height, 
+    $rgba = array(0, 0, 0, 1)) {
+    $block = '';
+    $block .= '<div id="' . $id . '" class="divWBHisto" ';
+    $block .= 'style="width:' . $width . 'px;height:' . $height . 
+      'px;">';
+    if (sizeof($data) > 0) {
+      $max = $data[0];
+      foreach ($data as $k => $v) {
+        if ($max < $v) {
+          $max = $v;
+        }
+      }
+      foreach ($data as $k => $v) {
+        $block .= '<div id="' . $id . 'Sample' . $k . 
+          '" class="divWBHistoSample" style="';
+        if ($max != 0) {
+          $h = floor($v / $max * $height);
+        } else {
+          $h = 0;
+        }
+        $block .= 'top:' . floor($height - $h - 1) .
+          'px;left:' . floor($k * $width / sizeof($data) - 1). 'px;';
+        $block .= 'width:' . floor($width / sizeof($data) - 1) . 'px;';
+        $block .= 'height:' . $h . 'px;">';
+        if ($h >= 20) {
+          $block .= $v;
+        }
+        $block .= '</div>';
+      }
+    }
+    $block .= '</div>';
+    return $block;
+  }
+
+  private function BuildMapAccess($longlat, $widthMap, 
+    $heightMap, $sizeDot) {
+    $block = '';
+    $block .= '<div class="divWBAccessMap">';
+    foreach ($longlat as $k => $v) {
+      if ($v['longlat'] != '') {
+        $ll = explode(',', $v['longlat']);
+        $long = (0.5 + $ll[0] / 360.0) * $widthMap - 0.5 * $sizeDot;
+        $lat = (1 - (0.5 + $ll[1] / 180.0)) * 
+          $heightMap - 0.5 * $sizeDot;
+        $block .= '<img style="top:' . $lat . 
+          'px; left:' . $long . 'px;">';
+      }
+    }
+    $block .= '</div>';
+    return $block;
+  }
+  
+  public function BuildAccessTile($id, $domain, 
+    $dateStartCounter, $dateEndCounter) {
+    $block = '';
+    $block .= '<div id="' . $id . '" class="divWBAccessTile">';
+    $block .= '<div class="divWBAccessTileTitle">Counters for<br>' . 
+      $domain . '</div>';
+    $block .= '<div class="divWBAccessTileContent">';
+    $block .= 'Total access : ' . 
+      $this->GetNbAccess($domain, $dateStartCounter, 
+      $dateEndCounter);
+    $block .= ' ( and ' . 
+      $this->GetNbAccessByBot($domain, $dateStartCounter, 
+      $dateEndCounter);
+    $block .= ' bots)<br>';
+    $accessByDay = 
+      $this->GetAccessByDay($domain, $dateStartCounter,
+      $dateEndCounter);
+    $histo = array();
+    $curDate = $dateStartCounter;
+    foreach ($accessByDay as $k => $v) {
+      while ($v['date'] != $curDate && $curDate <= $dateEndCounter) {
+        $histo[] = 0;
+        $curDate = date('Y-m-d', strtotime($curDate .' +1 day'));
+      }
+      $histo[] = $v['nb'];
+      $curDate = date('Y-m-d', strtotime($curDate .' +1 day'));
+    }
+    while ($curDate < $dateEndCounter) {
+      $histo[] = 0;
+      $curDate = date('Y-m-d', strtotime($curDate .' +1 day'));
+    }
+    $block .= $this->BuildHisto('divHisto' . $id, $histo, 350, 100);
+    $block .= '<br>';
+    $block .= '<u>Access by country :</u><br>';
+    $block .= '<div class="divWBAccessTileSubContent">';
+    $rankCountry = 
+      $this->GetAccessRankCountry($domain, $dateStartCounter,
+      $dateEndCounter);
+    foreach ($rankCountry as $k => $rank) {
+      if ($rank['country'] == "") {
+        $country = "??";
+      } else {
+        $country = $rank['country'];
+      }
+      $block .= $this->BuildGaugeHoriz('divGauge', $country . ': ' . 
+        $rank['nb'],
+        350, $rank['nb'] / $rankCountry[0]['nb']);
+    }
+    $block .= '</div>';
+    $block .= '<br><br>';
+    $block .= '<u>Access by city :</u><br>';
+    $block .= '<div class="divWBAccessTileSubContent">';
+    $rankCity = 
+      $this->GetAccessRankCity($domain, $dateStartCounter,
+      $dateEndCounter);
+    foreach ($rankCity as $k => $rank) {
+      if ($rank['country'] == "") {
+        $city = '??';
+      } else {
+        $city = $rank['country'];
+      }
+      $city .= ' - ';
+      if ($rank['region'] != "") {
+        $city .= $rank['region'] . ', ';
+      }
+      if ($rank['city'] == "") {
+        $city .= '??';
+      } else {
+        $city .= $rank['city'];
+      }
+      $block .= $this->BuildGaugeHoriz('divGauge', 
+        $city . ': ' . $rank['nb'],
+        350, $rank['nb'] / $rankCity[0]['nb']);
+    }
+    $block .= '</div>';
+    $block .= '<br><br>';
+    $block .= '<u>Map :</u><br><br>';
+    $longlat = $this->GetAccessLongLat($domain, 
+      $dateStartCounter, $dateEndCounter);
+    $block .= $this->BuildMapAccess($longlat, 350, 200, 5);
+    $block .= '<br><br>';
+    $block .= '<u>Access by referer :</u><br>';
+    $block .= '<div class="divWBAccessTileSubContent">';
+    $rankReferer = 
+      $this->GetAccessRankReferer($domain, $dateStartCounter,
+      $dateEndCounter);
+    foreach ($rankReferer as $k => $rank) {
+      if ($rank['referer'] == "") {
+        $referer = '??';
+      } else {
+        $referer = $rank['referer'];
+      }
+      if ($referer != '??') {
+        $link = '<a href="' . $referer . '">' . $referer . 
+          '</a>: ' . $rank['nb'];
+      } else {
+        $link = $referer . ': ' . $rank['nb'];
+      }
+      $block .= $this->BuildGaugeHoriz('divGauge', $link,
+        350, $rank['nb'] / $rankReferer[0]['nb']);
+    }
+    $block .= '</div>';
+    $block .= '</div>';
+    $block .= '</div>';
+
+    return $block;
+  }
+
 };
 
 // Create the global instance of the WebBuilder
