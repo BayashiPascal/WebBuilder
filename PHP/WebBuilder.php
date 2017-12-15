@@ -634,6 +634,7 @@ class WebBuilder {
       strpos(strtolower($agent), 'crawl') !== FALSE ||
       strpos(strtolower($agent), 'slurp') !== FALSE ||
       strpos(strtolower($agent), 'spider') !== FALSE ||
+      strpos(strtolower($agent), 'google favicon') !== FALSE ||
       strpos(strtolower($agent), 'mediapartners') !== FALSE) {
       return true;
     } else {
