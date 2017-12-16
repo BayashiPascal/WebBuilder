@@ -354,8 +354,12 @@ class WebBuilder {
     } else {
       $ip = $remote;
     }
-    $ip_data = file_get_contents(
-      "http://www.geoplugin.net/json.gp?ip=" . $ip);
+    try {
+      $ip_data = file_get_contents(
+        "http://www.geoplugin.net/json.gp?ip=" . $ip);
+    } catch (Exception $e) {
+      $ip_data = FALSE;
+    }
     if ($ip_data === FALSE) {
       $ip_data = '{';
       $ip_data .= '"geoplugin_request":"' . $ip . '",';
