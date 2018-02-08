@@ -159,3 +159,20 @@ ul {
   text-align: left;
 }
 
+.divWBLogin {
+  margin: 30px;
+}
+
+#divWBLogger {
+  height: 150px;
+}
+
+.divWBLoginLabel {
+  display: inline-block;
+  text-align: right;
+}
+
+.divWBLoginInput {
+  display: inline-block;
+  text-align: left;
+}
