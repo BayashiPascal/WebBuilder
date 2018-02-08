@@ -18,6 +18,7 @@ It offers the following functionalities:
 * Reference to useful external libraries.
 * Passing data from PHP to JS.
 * Image uploader on the server.
+* Restricted access through login.
 
 To setup a minimal webpage based on WebBuilder:
 * Copy the files in this repo
