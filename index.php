@@ -4,6 +4,10 @@
   session_start();
   // Include the WebBuilder
   require("PHP/WebBuilder.php");
+  // Process POST values
+  $theWB->ProcessPOSTValues();
+  // Log access 
+  $theWB->LogAccess();
   // Process arguments in url
   // 'la' to set language, 'mo' to set mode, 
   // 'setupdb' to automatically setup the database
@@ -82,6 +86,9 @@
 
     $divAccess = BuildAccess($theWB);
     echo $theWB->BuildDivTile('divAccessTile', $divAccess);
+
+    $divLogger = BuildLogin($theWB);
+    echo $theWB->BuildDivTile('divLoggerTile', $divLogger);
 
     echo $theWB->BuildDivFooter('divFooter', 
       'WebBuilder - Developper: P. Baillehache');
