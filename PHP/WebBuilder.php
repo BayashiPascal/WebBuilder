@@ -475,7 +475,11 @@ class WebBuilder {
     $argBind = array();
     $argBind[] = $stmt;
     $argBind[] = $types;
-    $argBind = array_merge($argBind, $vals);
+    // PHP5.2:
+    //$argBind = array_merge($argBind, $vals);
+    // PHP7.0:
+    foreach($vals as $key => $value)
+      $argBind[] = &$vals[$key];
     call_user_func_array('mysqli_stmt_bind_param', $argBind);
     if (!$stmt->execute()) {
       throw new WBException($this->_config['SiteName'],
@@ -511,7 +515,11 @@ class WebBuilder {
     $argBind = array();
     $argBind[] = $stmt;
     $argBind[] = $types;
-    $argBind = array_merge($argBind, $vals);
+    // PHP5.2:
+    //$argBind = array_merge($argBind, $vals);
+    // PHP7.0:
+    foreach($vals as $key => $value)
+      $argBind[] = &$vals[$key];
     call_user_func_array('mysqli_stmt_bind_param', $argBind);
     if (!$stmt->execute()) {
       throw new WBException($this->_config['SiteName'],
@@ -546,7 +554,11 @@ class WebBuilder {
     $argBind = array();
     $argBind[] = $stmt;
     $argBind[] = $types;
-    $argBind = array_merge($argBind, $vals);
+    // PHP5.2:
+    //$argBind = array_merge($argBind, $vals);
+    // PHP7.0:
+    foreach($vals as $key => $value)
+      $argBind[] = &$vals[$key];
     call_user_func_array('mysqli_stmt_bind_param', $argBind);
     if (!$stmt->execute()) {
       throw new WBException($this->_config['SiteName'],
@@ -578,7 +590,11 @@ class WebBuilder {
           $argBind = array();
           $argBind[] = $stmt;
           $argBind[] = $types;
-          $argBind = array_merge($argBind, $params);
+          // PHP5.2:
+          //$argBind = array_merge($argBind, $params);
+          // PHP7.0:
+          foreach($params as $key => $value)
+            $argBind[] = &$params[$key];
           call_user_func_array('mysqli_stmt_bind_param', $argBind);
         }
         if (!$stmt->execute()) {
