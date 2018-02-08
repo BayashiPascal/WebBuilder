@@ -1,8 +1,6 @@
 <?php 
 /* ============= WebBuilderConf.php =========== */
-
 require('WebBuilderDBConf.php');
-
 // Configuration of the WebBuilder
 $WebBuilderConf = array(
   // General
@@ -14,16 +12,17 @@ $WebBuilderConf = array(
   'DefaultMode' => '0',
   'AvailableModes' => array('0', '1'),
   'TimeZone' => 'Asia/Tokyo',
-  'AccessStat' => false,
-
+  'AccessStat' => true, // If true, creates the access table in DB when 
+                        // setupDB and log access automatically
+  'UserLogin' => false, // If true, creates the user login table in DB
+                       // when setupDB
   // Header
   'BaseURL' => 'http://localhost/WebBuilder/',
   'MetaDescription' => 'Main page of the WebBuilder framework',
   'MetaKeywords' => 'WebBuilder, PHP, MySQL, JavaScript, framework',
   'MetaViewportWidth' => 'device-width',
-  'IncludeCSS' => array('index.css'),
-  'IncludeJS' => array('index.js'),
-
+  'IncludeCSS' => array('index.css', 'Animate/animate.css', 'stats.css'),
+  'IncludeJS' => array('index.js', 'turnjs4/lib/turn.min.js', 'soundmanager2/soundmanager2.js', 'soundmanager2/inlineplayer.js'),
   // Database
   'DB_servername' => $DB_servername,
   'DB_username' => $DB_username,
@@ -35,6 +34,14 @@ $WebBuilderConf = array(
       'Reference' => 'INT UNSIGNED AUTO_INCREMENT PRIMARY KEY',
       'DateCmd' => 'DATETIME',
       'Val' => 'CHAR(10) character set utf8 collate utf8_bin'
+      )
+    )
+  ),
+  'DBModelLogin' => array( 'tables' => array(
+    'WBLogin' => array(
+      'Reference' => 'INT UNSIGNED AUTO_INCREMENT PRIMARY KEY',
+      'Login' => 'TEXT character set utf8 collate utf8_bin',
+      'Hash' => 'TEXT character set utf8 collate utf8_bin'
       )
     )
   ),
@@ -59,5 +66,4 @@ $WebBuilderConf = array(
   )
 );
   
-
 ?>
