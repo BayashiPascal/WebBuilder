@@ -45,6 +45,7 @@ class WebBuilder {
   private $_mode;
   private $_DBconn;
   private $_JSdata;
+  private $_isLogged;
   
   function __construct($conf, $dico) {
     $this->_config = $conf;
@@ -60,6 +61,7 @@ class WebBuilder {
     $this->_DBconn = null;
     date_default_timezone_set($conf['TimeZone']);
     $this->_JSdata = '{}';
+    $this->_isLogged = false;
     // Log access
     if ($conf['AccessStat'] == true) {
       $this->LogAccess();
@@ -165,6 +167,10 @@ class WebBuilder {
   
   public function GetLang() {
     return $this->_lang;
+  }
+
+  public function IsLogged() {
+    return $this->_isLogged;
   }
 
   public function SetMode($v) {
@@ -298,15 +304,42 @@ class WebBuilder {
     return $block;
   }
 
+  public function BuildDivLogger($submitTo) {
+    $block = '';
+    $block .= '<form method = "post" action = "' . $submitTo . '">';
+    $block .= '<div class = "divWBLogin">';
+    $block .= '<div class = "divWBLoginLabel">';
+    $block .= 'Login :';
+    $block .= '<br>';
+    $block .= 'Password :';
+    $block .= '</div>';
+    $block .= '<div class = "divWBLoginInput">';
+    $block .= '<input type = "text" name = "WBlogin" id = "WBlogin">';
+    $block .= '<br>';
+    $block .= '<input type = "password" name = "WBpasswd" id = "WBpasswd">';
+    $block .= '</div>';
+    $block .= '<br><br>';
+    $block .= '<input type = "submit" value = "Submit">';
+    $block .= '</div>';
+    $block .= '</form>';
+    return $this->BuildDivTile("divWBLogger", $block);
+  }
+
   public function BuildDivFooter($id, $content) {
     $block = '';
     $block .= '<div id="' . $id . '" class="divWBFooter">';
     $block .= $content;
+    if ($this->_isLogged == true) {
+      $block .= ' - <a href = "?WBlogout=1">Logout</a>';
+    }
     $block .= '</div>';
     return $block;
   }
 
   public function ProcessURLArg() {
+    if (isset($_GET["WBlogout"]) == true) {
+      $this->_isLogged = false;
+    }
     if (isset($_GET["la"]) == true) {
       $this->SetLang($_GET["la"]);
     }
@@ -318,6 +351,28 @@ class WebBuilder {
       if ($this->_config['AccessStat'] == true) {
         $this->CreateDB('DBModelStat');
       }
+      if ($this->_config['UserLogin'] == true) {
+        $this->CreateDB('DBModelLogin');
+      }
+    }
+  }
+  
+  public function ProcessPOSTValues() {
+    // If a login has been submitted
+    if (isset($_POST["WBlogin"]) == true &&
+      $_POST["WBlogin"] != '' &&
+      isset($_POST["WBpasswd"]) == true && 
+      $_POST["WBpasswd"] != '') {
+      // Check the password
+      if ($this->CheckUserLogin($_POST["WBlogin"], 
+        $_POST["WBpasswd"]) == true) {
+        // Set the logged in flag
+        $this->_isLogged = true;
+        // Memorize the current user for later use
+        $_SESSION["WBCURRENTUSER"] = $_POST["WBlogin"];
+      }
+      // Delete the password for security
+      $_POST["WBpasswd"] = '';
     }
   }
   
@@ -979,6 +1034,27 @@ class WebBuilder {
     $block .= '</div>';
 
     return $block;
+  }
+
+  public function CreateUserLogin($login, $passwd) {
+    $hash = password_hash($passwd, PASSWORD_DEFAULT);
+    $this->ExecInsertSQL('WBLogin', 
+      array('Login', 'Hash'), 
+      'ss', array($login, $hash));
+  }
+
+  public function CheckUserLogin($login, $passwd) {
+    $sql = 'SELECT Hash ';
+    $sql .= 'FROM WBLogin ';
+    $sql .= 'WHERE Login = ? ';
+    $cols = array('hash');
+    $types = 's';
+    $params = array(&$login);
+    $ret = $this->ExecSelectSQL($sql, $cols, $types, $params);
+    if (isset($ret[0]) && isset($ret[0]['hash']))
+      return password_verify($passwd, $ret[0]['hash']);
+    else
+      return false;
   }
 
 };
