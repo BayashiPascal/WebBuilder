@@ -547,4 +547,20 @@ function BuildAccess($theWB) {
   return $block;
 }
 
+function BuildLogin($theWB) {
+  $block = '';
+  $block .= '<div class="divTileTitle">';
+  $block .= 'Login access';
+  $block .= '</div>';
+  $block .= '<div class="divTileMainTxt">';
+  $block .= 'The access to a page can be restricted to logged in user. A new user can be created with ' . FormatCode('$theWB->CreateUserLogin($login, $passwd);') . '<br>A login plate can be created with <br>' . FormatCode('$theWB->BuildDivLogger($submitTo);') . '<br>The current logged in status can be checked with <br>' . FormatCode('if ($theWB->IsLogged() == false) {<br>echo $theWB->BuildDivLogger("index.php");<br>} else {<br>echo "you are logged in";<br>}') . '<br>When logged in a link to logout is automatically added to the footer.<br>You can try yourself below with the login "WebBuilder" and password "WebBuilder".<br><br>';
+  if ($theWB->IsLogged() == false) {
+    $block .= $theWB->BuildDivLogger("index.php");
+  } else {
+    $block .= "you are logged in";
+  }
+  $block .= '</div>';
+  return $block;
+}
+
 ?>
