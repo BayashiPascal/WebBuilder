@@ -186,6 +186,10 @@ class WebBuilder {
     return $this->_JSdata;
   }
 
+  public function GetConfig($key) {
+    return $this->_config[$key];
+  }
+
   public function BuildMeta() {
     $block = '';
     $block .= '<meta charset="UTF-8"/>';
