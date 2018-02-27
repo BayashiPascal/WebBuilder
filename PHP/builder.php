@@ -377,7 +377,7 @@ function BuildHTTPRequest($theWB) {
     id="divTitleChuck"></div></div>';
   $block .= 'A HTTP POST request toward an API returning JSON data can  
     be summoned through the code:<br>' . 
-    FormatCode('theWB.HTTPPOStRequest(url, form, handler);') . 
+    FormatCode('theWB.HTTPPostRequest(url, form, handler);') . 
     '<br>The "form" arguments is the form element in the DOM 
     containing the form data to be sent. The 
     handler has one argument, an object containing the decoded JSON 
