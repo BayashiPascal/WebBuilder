@@ -62,11 +62,6 @@ class WebBuilder {
     date_default_timezone_set($conf['TimeZone']);
     $this->_JSdata = '{}';
     $this->_isLogged = false;
-    // Log access
-    if ($conf['AccessStat'] == true) {
-      $this->LogAccess();
-    }
-
   }
   
   function __destruct() {
@@ -337,35 +332,39 @@ class WebBuilder {
   }
 
   public function ProcessURLArg() {
-    if (isset($_GET["WBlogout"]) == true) {
+    if (isset($_GET["WBlogout"]) === true) {
       $this->_isLogged = false;
     }
-    if (isset($_GET["la"]) == true) {
+    if (isset($_GET["la"]) === true) {
       $this->SetLang($_GET["la"]);
     }
-    if (isset($_GET["mo"]) == true) {
+    if (isset($_GET["mo"]) === true) {
       $this->SetMode($_GET["mo"]);
     }
-    if (isset($_GET["setupdb"]) == true) {
+    if (isset($_GET["setupdb"]) === true) {
       $this->CreateDB('DBModel');
-      if ($this->_config['AccessStat'] == true) {
+      if ($this->_config['AccessStat'] === true) {
         $this->CreateDB('DBModelStat');
       }
-      if ($this->_config['UserLogin'] == true) {
+      if ($this->_config['UserLogin'] === true) {
         $this->CreateDB('DBModelLogin');
       }
+    }
+    // Log access
+    if ($this->_config['AccessStat'] === true) {
+      $this->LogAccess();
     }
   }
   
   public function ProcessPOSTValues() {
     // If a login has been submitted
-    if (isset($_POST["WBlogin"]) == true &&
+    if (isset($_POST["WBlogin"]) === true &&
       $_POST["WBlogin"] != '' &&
-      isset($_POST["WBpasswd"]) == true && 
+      isset($_POST["WBpasswd"]) === true && 
       $_POST["WBpasswd"] != '') {
       // Check the password
       if ($this->CheckUserLogin($_POST["WBlogin"], 
-        $_POST["WBpasswd"]) == true) {
+        $_POST["WBpasswd"]) === true) {
         // Set the logged in flag
         $this->_isLogged = true;
         // Memorize the current user for later use
@@ -723,7 +722,8 @@ class WebBuilder {
   }
 
   public function LogAccess() {
-    if (isset($_SESSION['WBACCESSTRACKREF']) === false) {
+    if ($this->_config['AccessStat'] === true &&
+      isset($_SESSION['WBACCESSTRACKREF']) === false) {
       $datetime = date('Y-m-d H:i:s');
       $ip_data = json_decode($this->GetIPInfo());
       if (isset($_SERVER['HTTP_ORIGIN'])) {
@@ -738,7 +738,7 @@ class WebBuilder {
         $ip_data->geoplugin_latitude;
       $uri = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
       $robot = ($this->IsAgentRobot($_SERVER['HTTP_USER_AGENT']) ? 
-        'TRUE' : 'FALSE');
+        '1' : '0');
       $this->ExecInsertSQL('WBAccessTracker', 
         array('DateTime', 'RefererIP', 'City', 'Country', 'LongLat',
         'HTTP_REFERER', 'HTTP_USER_AGENT', 'REQUEST_URI', 'Robot'), 
