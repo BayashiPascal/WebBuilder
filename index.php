@@ -6,8 +6,6 @@
   require("PHP/WebBuilder.php");
   // Process POST values
   $theWB->ProcessPOSTValues();
-  // Log access 
-  $theWB->LogAccess();
   // Process arguments in url
   // 'la' to set language, 'mo' to set mode, 
   // 'setupdb' to automatically setup the database
