@@ -176,3 +176,39 @@ ul {
   display: inline-block;
   text-align: left;
 }
+
+.divWBDBEditor {
+  width: 100%;
+  text-align: center;
+}
+
+.divWBDBEditorTitle {
+  font-size: 18px;
+  width: 90%;
+  padding: 5px;
+}
+
+.divWBDBEditorCtrl img {
+  height: 40px;
+}
+
+.divWBDBEditorPosition {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.divWBDBEditorFieldLbl {
+  display: inline-block;
+  width: 24%;
+}
+
+.divWBDBEditorFieldData {
+  display: inline-block;
+  width: 74%;
+  text-align: left;
+  padding-left: 5px;
+}
+
+.divWBDBEditorFieldData input {
+  width: 90%;
+}
