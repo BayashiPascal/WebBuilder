@@ -29,7 +29,7 @@
     echo $theWB->BuildTitle(); 
 ?>
   </head>
-  <body onload = 'WBBodyOnLoad(<?php echo $theWB->GetJSdata(); ?>);BodyOnLoad();'>
+  <body>
 <?php 
 
     echo $theWB->BuildDivTitle('divTitle', 'WebBuilder');
@@ -95,5 +95,10 @@
       'WebBuilder - Developper: P. Baillehache');
 ?>
   </body>
-
+  <script>
+    window.onload = function() {
+      WBBodyOnLoad('<?php echo $theWB->GetJSdata(); ?>');
+      BodyOnLoad();
+    }
+  </script> 
 </html>
