@@ -19,6 +19,7 @@ It offers the following functionalities:
 * Passing data from PHP to JS.
 * Image uploader on the server.
 * Restricted access through login.
+* Editor for data in a MySQL DB.
 
 To setup a minimal webpage based on WebBuilder:
 * Copy the files in this repo
