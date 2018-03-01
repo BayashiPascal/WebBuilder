@@ -88,6 +88,9 @@
     $divLogger = BuildLogin($theWB);
     echo $theWB->BuildDivTile('divLoggerTile', $divLogger);
 
+    $divDBEditor = BuildDBEditor($theWB);
+    echo $theWB->BuildDivTile('divDBEditor', $divDBEditor);
+
     echo $theWB->BuildDivFooter('divFooter', 
       'WebBuilder - Developper: P. Baillehache');
 ?>
