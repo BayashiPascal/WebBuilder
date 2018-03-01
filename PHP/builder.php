@@ -558,4 +558,17 @@ function BuildLogin($theWB) {
   return $block;
 }
 
+function BuildDBEditor($theWB) {
+  $block = '';
+  $block .= '<div class="divTileTitle">';
+  $block .= 'Database editor';
+  $block .= '</div>';
+  $block .= '<div class="divTileMainTxt">';
+  $block .= 'Data in a MySQL database can be edited through tiles called DBEditor. Each DBEditor is configured in the file ' . FormatCode('WebBuilderConf.php') . '. There can be several editors per page. Each editor works dynamically (no need to reload the page) and independantly (simultaneous edition possible). Editors can take into account relation table. Each editor can display, modify, add, delete and reload (to cancel pending modifications or taking into account modifications in linked tables) of records. It is possible to edit several records at once. Database edition is protected by requiring to be logged in.<br><br> An example is given below (screenshot):<br>';
+  $block .= '<img src="./Img/DBEditor.jpg" alt="DBEditor"';
+  $block .= ' style="width:300px;">';
+  $block .= '</div>';
+  return $block;
+}
+
 ?>

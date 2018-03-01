@@ -14,29 +14,38 @@ $WebBuilderConf = array(
   'TimeZone' => 'Asia/Tokyo',
   'AccessStat' => true, // If true, creates the access table in DB when 
                         // setupDB and log access automatically
-  'UserLogin' => false, // If true, creates the user login table in DB
+  'UserLogin' => true, // If true, creates the user login table in DB
                        // when setupDB
   // Header
-  'BaseURL' => 'http://localhost/WebBuilder/',
+  //'BaseURL' => 'http://localhost/WebBuilder/',
+  'BaseURL' => 'http://www.bayashiinjapan.net/WebBuilder/',
   'MetaDescription' => 'Main page of the WebBuilder framework',
   'MetaKeywords' => 'WebBuilder, PHP, MySQL, JavaScript, framework',
   'MetaViewportWidth' => 'device-width',
   'IncludeCSS' => array('index.css', 'Animate/animate.css', 'stats.css'),
   'IncludeJS' => array('index.js', 'turnjs4/lib/turn.min.js', 'soundmanager2/soundmanager2.js', 'soundmanager2/inlineplayer.js'),
-  // Database
+  // Database connection informations
   'DB_servername' => $DB_servername,
   'DB_username' => $DB_username,
   'DB_password' => $DB_password,
   'DB_dbname' => $DB_dbname,
+  // BigBrother function
   'DBBigBrother' => false, // true or false
+  // Database model
   'DBModel' => array( 'tables' => array(
     'WBTableTest' => array(
       'Reference' => 'INT UNSIGNED AUTO_INCREMENT PRIMARY KEY',
-      'DateCmd' => 'DATETIME',
+      'DateCmd' => 'DATE',
+      'Ref' => 'INT',
+      'Val' => 'CHAR(10) character set utf8 collate utf8_bin'
+      ),
+    'WBTableTest2' => array(
+      'Reference' => 'INT UNSIGNED AUTO_INCREMENT PRIMARY KEY',
       'Val' => 'CHAR(10) character set utf8 collate utf8_bin'
       )
     )
   ),
+  // Login table for user login
   'DBModelLogin' => array( 'tables' => array(
     'WBLogin' => array(
       'Reference' => 'INT UNSIGNED AUTO_INCREMENT PRIMARY KEY',
@@ -45,6 +54,7 @@ $WebBuilderConf = array(
       )
     )
   ),
+  // Statistic table for access logger
   'DBModelStat' => array( 'tables' => array(
     'WBAccessTracker' => array(
       'Reference' => 'INT UNSIGNED AUTO_INCREMENT PRIMARY KEY',
@@ -62,6 +72,20 @@ $WebBuilderConf = array(
       'LongLat' => 'TEXT character set utf8 collate utf8_bin',
       'Robot' => 'BOOL NOT NULL DEFAULT false'
       )
+    )
+  ),
+  // Models for DB editor
+  'DBEditor' => array(
+    'WBTableTest' => array (
+      'Reference' => 'Reference',
+      'DateCmd' => 'Date',
+      'Val' => 'Text',
+      'Ref' => 'Select,WBTableTest2,Reference,Val'/*,
+      'WBDBEditorFilter' => 'Reference > 1'*/
+    ),
+    'WBTableTest2' => array (
+      'Reference' => 'Reference',
+      'Val' => 'Text'
     )
   )
 );

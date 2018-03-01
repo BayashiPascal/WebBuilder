@@ -45,7 +45,7 @@ class WebBuilder {
   private $_mode;
   private $_DBconn;
   private $_JSdata;
-  private $_isLogged;
+  private $_DBEditors;
   
   function __construct($conf, $dico) {
     $this->_config = $conf;
@@ -61,7 +61,7 @@ class WebBuilder {
     $this->_DBconn = null;
     date_default_timezone_set($conf['TimeZone']);
     $this->_JSdata = '{}';
-    $this->_isLogged = false;
+    $this->_DBEditors = array();
   }
   
   function __destruct() {
@@ -164,8 +164,16 @@ class WebBuilder {
     return $this->_lang;
   }
 
+  public function GetForms() {
+    return $this->_config["DBEditor"];
+  }
+  
   public function IsLogged() {
-    return $this->_isLogged;
+    if (isset($_SESSION["WBCURRENTUSER"]) &&
+      $_SESSION["WBCURRENTUSER"] != "")
+      return true;
+    else
+      return false;
   }
 
   public function SetMode($v) {
@@ -184,7 +192,17 @@ class WebBuilder {
   }
 
   public function GetJSData() {
-    return $this->_JSdata;
+    $ret = '{"PHPdata":' . $this->_JSdata .', "DBEditors":';
+    $safeJson = str_replace("\u0022","\\\\\"",
+      json_encode($this->_DBEditors, JSON_HEX_QUOT)); 
+    $ret .= $safeJson;
+    $ret .= ', "DBEditorModels":';
+    $safeJson = str_replace("\u0022","\\\\\"",
+      json_encode($this->_config["DBEditor"], JSON_HEX_QUOT)); 
+    $ret .= $safeJson;
+    $ret .= '}';
+    $ret = str_replace("'", "\'", $ret);
+    return $ret;
   }
 
   public function GetConfig($key) {
@@ -301,30 +319,171 @@ class WebBuilder {
 
   public function BuildDivLogger($submitTo) {
     $block = '';
-    $block .= '<form method = "post" action = "' . $submitTo . '">';
-    $block .= '<div class = "divWBLogin">';
-    $block .= '<div class = "divWBLoginLabel">';
+    $block .= '<form method="post" action ="' . $submitTo . '">';
+    $block .= '<div class="divWBLogin">';
+    $block .= '<div class="divWBLoginLabel">';
     $block .= 'Login :';
     $block .= '<br>';
     $block .= 'Password :';
     $block .= '</div>';
-    $block .= '<div class = "divWBLoginInput">';
-    $block .= '<input type = "text" name = "WBlogin" id = "WBlogin">';
+    $block .= '<div class="divWBLoginInput">';
+    $block .= '<input type="text" name="WBlogin" id="WBlogin">';
     $block .= '<br>';
-    $block .= '<input type = "password" name = "WBpasswd" id = "WBpasswd">';
+    $block .= 
+      '<input type="password" name="WBpasswd" id="WBpasswd">';
     $block .= '</div>';
     $block .= '<br><br>';
-    $block .= '<input type = "submit" value = "Submit">';
+    $block .= '<input type="submit" value="Submit">';
     $block .= '</div>';
     $block .= '</form>';
     return $this->BuildDivTile("divWBLogger", $block);
+  }
+
+  public function DBEditorGetData($formName) {
+    // Ensure the form exists (i.e. is defined in WebBuilderConf.php
+    $forms = &$this->_config["DBEditor"];
+    if (!isset($forms[$formName]))
+      throw new WBException($this->_config['SiteName'],
+        $this->_config['DeveloperEmail'],
+        'Called BuildDivDBTableEditor for unknown form "' .
+        $formName . '"');
+    // Ensure the form has a 'Reference' field
+    if (!isset($forms[$formName]["Reference"]))
+      throw new WBException($this->_config['SiteName'],
+        $this->_config['DeveloperEmail'],
+        'The form "' . $formName . '" has no "Reference" field.');
+    // Create the SQL command
+    $cols = array();
+    $sql = "SELECT ";
+    $flag = false;
+    foreach ($forms[$formName] as $field => $val) {
+      if ($field != "WBDBEditorFilter") {
+        $cols[] = $field;
+        if ($flag === true)
+          $sql .= ",";
+        else
+          $flag = true;
+        $sql .= $field;
+      }
+    }
+    $sql .= " FROM " . $formName;
+    if (isset($forms[$formName]["WBDBEditorFilter"]) === true &&
+      $forms[$formName]["WBDBEditorFilter"] != "")
+      $sql .= " WHERE " . $forms[$formName]["WBDBEditorFilter"];
+    // Return the result of the SQL command
+    return $this->ExecSelectSQL($sql, $cols);
+  }
+
+  public function BuildDivDBEditor($formName, $title) {
+    // Get the data
+    $this->_DBEditors[$formName] = $this->DBEditorGetData($formName);
+    // Create the DOM to manipulate the data
+    $block = '';
+    $block .= '<div class="divWBDBEditor">';
+    // Title
+    if ($title != "") {
+      $block .= '<div class="divWBDBEditorTitle">' . $title . '</div>';
+    }
+    // Control buttons
+    $block .= '<div class="divWBDBEditorCtrl">';
+    $block .= 
+      '<img src="./Img/Icons/refactor.png" alt="load"';
+    $block .= ' onclick="theWB.DBEditorReload(\'' . 
+      $formName . '\');">';
+    $block .= 
+      '<img src="./Img/Icons/recordIconFullBackward.png" alt="first"';
+    $block .= ' onclick="theWB.DBEditorFirst(\'' . 
+      $formName . '\');">';
+    $block .= 
+      '<img src="./Img/Icons/recordIconBackward.png" alt="previous"';
+    $block .= ' onclick="theWB.DBEditorPrevious(\'' . 
+      $formName . '\');">';
+    $block .= 
+      '<img src="./Img/Icons/recordIconForward.png" alt="next"';
+    $block .= ' onclick="theWB.DBEditorNext(\'' . 
+      $formName . '\');">';
+    $block .= 
+      '<img src="./Img/Icons/recordIconFullForward.png" alt="last"';
+    $block .= ' onclick="theWB.DBEditorLast(\'' . 
+      $formName . '\');">';
+    $block .= 
+      '<img id="imgWBDBEditorDelete' . $formName . 
+          '" src="./Img/Icons/recordIconMinusOff.png" alt="delete"';
+    $block .= ' onclick="theWB.DBEditorDelete(\'' . 
+      $formName . '\');">';
+    $block .= 
+      '<img src="./Img/Icons/recordIconPlus.png" alt="add"';
+    $block .= ' onclick="theWB.DBEditorAdd(\'' . 
+      $formName . '\');">';
+    $block .= 
+      '<img style="display:none;" id="imgWBDBEditorSave' . 
+            $formName . '" src="./Img/Icons/saveIcon.png" alt="save"';
+    $block .= ' onclick="theWB.DBEditorSave(\'' . 
+      $formName . '\');">';
+    $block .= '</div>';
+    $block .= '<div class="divWBDBEditorPosition">';
+    $block .= '<span id="spanDBEditorCurPos' . 
+      $formName . '"></span>/<span id="spanDBEditorLastPos' . 
+      $formName . '"></span>';
+    $block .= '</div>';
+    // Displayed data
+    $block .= '<div id="divWBDBEditorDataDeleted' . $formName . 
+      '" style="display:none;" class="divWBDBEditorData">';
+    $block .= 'This record has been deleted.</div>';
+    $block .= '<div id="divWBDBEditorData' . $formName . 
+      '" class="divWBDBEditorData">';
+    // For each field
+    $forms = &$this->_config["DBEditor"];
+    foreach ($forms[$formName] as $field => $val) {
+      if ($field != "WBDBEditorFilter") {
+        $block .= '<div class="divWBDBEditorField">';
+        $block .= '<div class="divWBDBEditorFieldLbl">';
+        $block .= $field;
+        $block .= '</div>';
+        $block .= '<div id="divWBDBEditorFieldData' . $formName . 
+        '" class="divWBDBEditorFieldData">';
+        // If it's a reference, display it but enable the user to modify
+        if ($field == "Reference")
+          $block .= '<input type="text" id="inpWBDBEditorField' . 
+            $formName . $field . '" readonly>';
+        // If it's a date
+        else if ($val == "Date")
+          $block .= '<input type="date" id="inpWBDBEditorField' . 
+            $formName . $field . '">';
+        // If it's a link toward another table
+        else if (strpos($val, "Select,") === 0) {
+          // Get the target table and fields
+          $args = explode(",", $val);
+          // Get the values in the target table
+          $sqlSelect = "SELECT " . $args[2] . "," . $args[3] . 
+            " FROM " . $args[1];
+          $colsSelect = array($args[2], $args[3]);
+          $opts = $this->ExecSelectSQL($sqlSelect, $colsSelect);
+          // Create the select box
+          $block .= '<select id="inpWBDBEditorField' . 
+             $formName . $field . '">';
+          foreach ($opts as $index => $opt)
+            $block .= '<option value="' . $opt[$args[2]] . '">' . 
+              $opt[$args[3]] . '</option>';
+          $block .= '</select>';
+        // Standard input text for any other field type
+        } else
+          $block .= '<input type="text" id="inpWBDBEditorField' . 
+            $formName . $field . '">';
+        $block .= '</div>';
+        $block .= '</div>';
+      }
+    }
+    $block .= '</div>';
+    $block .= '</div>';
+    return $this->BuildDivTile("divWBDBEditor" . $formName, $block);
   }
 
   public function BuildDivFooter($id, $content) {
     $block = '';
     $block .= '<div id="' . $id . '" class="divWBFooter">';
     $block .= $content;
-    if ($this->_isLogged == true) {
+    if ($this->IsLogged() == true) {
       $block .= ' - <a href = "?WBlogout=1">Logout</a>';
     }
     $block .= '</div>';
@@ -333,7 +492,7 @@ class WebBuilder {
 
   public function ProcessURLArg() {
     if (isset($_GET["WBlogout"]) === true) {
-      $this->_isLogged = false;
+      $_SESSION["WBCURRENTUSER"] = "";
     }
     if (isset($_GET["la"]) === true) {
       $this->SetLang($_GET["la"]);
@@ -365,10 +524,11 @@ class WebBuilder {
       // Check the password
       if ($this->CheckUserLogin($_POST["WBlogin"], 
         $_POST["WBpasswd"]) === true) {
-        // Set the logged in flag
-        $this->_isLogged = true;
         // Memorize the current user for later use
         $_SESSION["WBCURRENTUSER"] = $_POST["WBlogin"];
+      } else {
+        // Reset the current user
+        $_SESSION["WBCURRENTUSER"] = "";
       }
       // Delete the password for security
       $_POST["WBpasswd"] = '';
