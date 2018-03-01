@@ -87,7 +87,7 @@ WebBuilder.prototype.HTTPPostRequest = function(url, form, handler) {
     var formData = new FormData(form);
     xhr.send(formData);
   } catch (err) {
-    console.log("WebBuilder.HTTPGetRequest " + err.stack);
+    console.log("WebBuilder.HTTPPostRequest " + err.stack);
   }
 }
 
