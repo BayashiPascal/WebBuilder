@@ -7,7 +7,7 @@ $WebBuilderConf = array(
   'SiteName' => 'WebBuilder',
   'DebugMode' => false,  // true or false
   'RefreshDico' => false,  // true or false
-  'DeveloperEmail' => 'Pascal@BayashiInJapan.net',
+  'DeveloperEmail' => 'your@email.com',
   'DefaultLang' => 'en',
   'DefaultMode' => '0',
   'AvailableModes' => array('0', '1'),
@@ -17,8 +17,7 @@ $WebBuilderConf = array(
   'UserLogin' => true, // If true, creates the user login table in DB
                        // when setupDB
   // Header
-  //'BaseURL' => 'http://localhost/WebBuilder/',
-  'BaseURL' => 'http://www.bayashiinjapan.net/WebBuilder/',
+  'BaseURL' => 'http://localhost/WebBuilder/',
   'MetaDescription' => 'Main page of the WebBuilder framework',
   'MetaKeywords' => 'WebBuilder, PHP, MySQL, JavaScript, framework',
   'MetaViewportWidth' => 'device-width',
