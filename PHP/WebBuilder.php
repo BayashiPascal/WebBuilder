@@ -897,8 +897,34 @@ class WebBuilder {
       $longlat = $ip_data->geoplugin_longitude . ',' . 
         $ip_data->geoplugin_latitude;
       $uri = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+      // Check if the user agent is a bot
       $robot = ($this->IsAgentRobot($_SERVER['HTTP_USER_AGENT']) ? 
         '1' : '0');
+      // If the user agent was not marked as a bot, check again based 
+      // on the frequency of requests from this ip adress since 5s
+      if ($robot == 0) {
+        $datetimeSince = date('Y-m-d H:i:s', time() - 5);
+        $sqlCheck = 'SELECT COUNT(*) FROM WBAccessTracker ';
+        $sqlCheck .= 'WHERE DateTime >= "' . $dateTimeSince . '" AND ';
+        $sqlCheck .= 'RefererIP = ?';
+        $colsCheck = array('nb');
+        $ip = $ip_data->geoplugin_request;
+        $paramsCheck = array($ip);
+        $res = $this->ExecSelectSQL($sqlCheck, $colsCheck, 's',
+          $paramsCheck);
+        if ($res[0]['nb'] >= 5) {
+          // Mark this access as a robot
+          $robot = 1;
+          // Mark all the previous access from this IP since yesterday
+          // as robots
+          $colsUpdate = array('Robot');
+          $valsUpdate = array(&$robot, &$ip);
+          $datetimeUpdate = date('Y-m-d', strtotime('-1 days'));
+          $this->ExecUpdateSQL('WBAccessTracker', $colsUpdate, 'is',
+            $valsUpdate, 'RefererIp = ? AND DateTime >= "' . $datetimeUpdate . '"');
+        }
+      }
+      // Save the access in the DB
       $this->ExecInsertSQL('WBAccessTracker', 
         array('DateTime', 'RefererIP', 'City', 'Country', 'LongLat',
         'HTTP_REFERER', 'HTTP_USER_AGENT', 'REQUEST_URI', 'Robot'), 
