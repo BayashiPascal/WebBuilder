@@ -25,7 +25,8 @@ To setup a minimal webpage based on WebBuilder:
 * Copy the files in this repo
 * Download jquery.min.js and add it to the JS folder
 * Set the base url, email and database connection into PHP/WebBuilderConf.php and PHP/WebBuilderDBConf.php
-* Access index.php, if everything works fine you should see the same page as the link below. If not don't hesitate to contact me !
+* Access index.php?setupdb=1
+* If everything works fine you should see the same page as the link below. If not don't hesitate to contact me !
 
 Documentation is available as a webpage made using WebBuilder at the following adress:
 http://www.bayashiinjapan.net/WebBuilder/
