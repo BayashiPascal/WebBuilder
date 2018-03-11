@@ -880,7 +880,7 @@ class WebBuilder {
     } else {
       // If the user agent was not marked as a bot, check again based 
       // on the frequency of requests from this ip adress since 5s
-      $dateTimeSince = date('Y-m-d H:i:s', time() - 5);
+      $dateTimeSince = date('Y-m-d H:i:s', time() - 30);
       $dateTimeUpdate = date('Y-m-d', strtotime('-1 days'));
       $sqlCheck = 'SELECT COUNT(*) FROM WBAccessTracker ';
       $sqlCheck .= 'WHERE RefererIP = ? AND (';
@@ -906,9 +906,15 @@ class WebBuilder {
   }
 
   public function LogAccess() {
+    // Get the accessed domain without $_GET parameters
+    $domain = $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
+    // If we are logging the access and its the first time the 
+    // user accesses this domain
     if ($this->_config['AccessStat'] === true &&
-      isset($_SESSION['WBACCESSTRACKREF']) === false) {
+      isset($_SESSION['WBACCESSTRACKREF' . $domain]) === false) {
+      // Get the date and time of access
       $datetime = date('Y-m-d H:i:s');
+      // Get the info about the user based on its IP
       $ip_data = json_decode($this->GetIPInfo());
       if (isset($_SERVER['HTTP_ORIGIN'])) {
         $referer = $_SERVER['HTTP_ORIGIN'];
@@ -918,8 +924,10 @@ class WebBuilder {
       } else {
         $referer = "";
       }
+      // Create the longitude,latitude coordinates
       $longlat = $ip_data->geoplugin_longitude . ',' . 
         $ip_data->geoplugin_latitude;
+      // Create the accessed uri
       $uri = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
       // Check if the user agent is a bot
       $robot = ($this->IsAgentRobot($_SERVER['HTTP_USER_AGENT'],
@@ -931,7 +939,9 @@ class WebBuilder {
         'sssssssss', array($datetime, $ip_data->geoplugin_request, 
         $ip_data->geoplugin_city, $ip_data->geoplugin_countryName, 
         $longlat, $referer, $_SERVER['HTTP_USER_AGENT'], $uri, $robot));
-      $_SESSION['WBACCESSTRACKREF'] = $this->_insert_id;
+      // Save the access in $_SESSION to avoid counting several times
+      // the same user
+      $_SESSION['WBACCESSTRACKREF' . $domain] = $this->_insert_id;
     }
   }
 
