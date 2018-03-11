@@ -11,7 +11,7 @@ It offers the following functionalities:
 * Auto processing of some url arguments.
 * Execution of command on server side.
 * User country from IP.
-* MySQL database PHP functions (DB autocreation, select, insert, update, delete).
+* MySQL database PHP functions (DB autocreation, select, insert, update, delete, logger).
 * HTTP request.
 * Asynchronous image loader.
 * Set of icons.
@@ -19,6 +19,7 @@ It offers the following functionalities:
 * Passing data from PHP to JS.
 * Image uploader on the server.
 * Restricted access through login.
+* Access logger.
 * Editor for data in a MySQL DB.
 
 To setup a minimal webpage based on WebBuilder:
