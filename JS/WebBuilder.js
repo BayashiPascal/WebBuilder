@@ -34,15 +34,15 @@ WebBuilder.prototype.HTTPGetRequest = function(url, handler) {
     xhr._handler = handler;
     xhr.onreadystatechange = function() {
       // If the request is ready
-      if (xhr.readyState == 4) {
-        if (xhr.status == 200) {
+      if (this.readyState == 4) {
+        if (this.status == 200) {
           // The request was successful, return the reply data
-          var returnedData = JSON.parse(xhr.responseText);
+          var returnedData = JSON.parse(this.responseText);
         } else {
           // The request failed, return error as JSON
           var returnedData = 
             JSON.parse('{"err":"HTTPRequest failed : ' + 
-              xhr.status + '"}');
+              this.status + '"}');
         }
         this._handler(returnedData);
       }
@@ -69,15 +69,15 @@ WebBuilder.prototype.HTTPPostRequest = function(url, form, handler) {
     xhr._handler = handler;
     xhr.onreadystatechange = function() {
       // If the request is ready
-      if (xhr.readyState == 4) {
-        if (xhr.status == 200) {
+      if (this.readyState == 4) {
+        if (this.status == 200) {
           // The request was successful, return the reply data
-          var returnedData = JSON.parse(xhr.responseText);
+          var returnedData = JSON.parse(this.responseText);
         } else {
           // The request failed, return error as JSON
           var returnedData = 
             JSON.parse('{"err":"HTTPRequest failed : ' + 
-              xhr.status + '"}');
+              this.status + '"}');
         }
         this._handler(returnedData);
       }
