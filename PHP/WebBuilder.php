@@ -608,6 +608,12 @@ class WebBuilder {
         $this->_config['DB_username'], 
         $this->_config['DB_password'],
         $this->_config['DB_dbname']);
+        if ($this->_DBconn->connect_errno &&
+          $WebBuilderConf["DebugMode"] == true) {
+          echo "Failed to connect to MySQL: (" . 
+            $this->_DBconn->connect_errno . ") " . 
+            $this->_DBconn->connect_error;
+        }
       $this->_DBconn->set_charset("utf8");
     }
   }
