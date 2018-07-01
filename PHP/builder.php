@@ -295,7 +295,7 @@ function BuildDB($theWB) {
     $cols, $types, $vals)') . ': Executes a INSERT SQL command in 
     table ' . FormatCode('$table') . ' with values ' . FormatCode(
     '$vals') . ' of types ' . FormatCode('$types') . ' for columns ' .
-    FormatCode('$cols') . '.</li>';
+    FormatCode('$cols') . '. Inserted row\'s Reference is accessible with ' . FormatCode('$theWB->_insert_id') . '</li>';
   $block .= '<li>' . FormatCode('$theWB->ExecUpdateSQL($table, 
     $cols, $types, $vals, $cond = "")') . ': Executes a UPDATE SQL 
     command in table ' . FormatCode('$table') . ' with values ' . 
