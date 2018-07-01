@@ -377,6 +377,13 @@ function BuildHTTPRequest($theWB) {
     id="divTitleChuck"></div></div>';
   $block .= 'A HTTP POST request toward an API returning JSON data can  
     be summoned through the code:<br>' . 
+    FormatCode('var form = document.createElement("form");') . '<br>' . 
+    FormatCode('form.setAttribute("method", "post");') . '<br>' . 
+    FormatCode('var inp = document.createElement("input");') . '<br>' . 
+    FormatCode('inp.setAttribute("type", "text");') . '<br>' . 
+    FormatCode('inp.setAttribute("name", "nameInput");') . '<br>' . 
+    FormatCode('inp.setAttribute("value", "valInput");') . '<br>' . 
+    FormatCode('form.appendChild(inp);') . '<br>' . 
     FormatCode('theWB.HTTPPostRequest(url, form, handler);') . 
     '<br>The "form" arguments is the form element in the DOM 
     containing the form data to be sent. The 
@@ -494,7 +501,7 @@ function BuildPHPtoJS($theWB) {
   $block .= 'Passing data from PHP to JS';
   $block .= '</div>';
   $block .= '<div class="divTileMainTxt">';
-  $block .= 'Data from the PHP WebBuilder object can be passed to the JS WebBuilder object with the PHP code ' . FormatCode('$theWB->SetJSData($var);') . ' (must be used in the header, before body onload) and retrieved through the JS code ' . FormatCode('theWB._PHPdata') . '<br>For example to get the date on the server and display it with JS:<br>PHP code<br>' . FormatCode('$var["date"] = date("Y-m-d"); $theWB->SetJSData($var);') . '<br>JS code<br>' . FormatCode('$("#divPHPtoJSdate").html(theWB._PHPdata["date"]);') . '<br>Result:<br><div id="divPHPtoJSdate"></div>';
+  $block .= 'Data from the PHP WebBuilder object can be passed to the JS WebBuilder object with the PHP code ' . FormatCode('$theWB->SetJSData($var);') . ' (must be used in the header, before body onload) and retrieved through the JS code ' . FormatCode('theWB._PHPdata') . '<br>For example to get the date on the server and display it with JS:<br>PHP code<br>' . FormatCode('$var["date"] = date("Y-m-d"); $theWB->SetJSData($var);') . '<br>JS code<br>' . FormatCode('$("#divPHPtoJSdate").html(theWB._PHPdata["PHPdata"]["date"]);') . '<br>Result:<br><div id="divPHPtoJSdate"></div>';
   $block .= '</div>';
   return $block;
 }
