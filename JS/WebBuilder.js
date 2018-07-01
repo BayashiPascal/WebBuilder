@@ -37,7 +37,13 @@ WebBuilder.prototype.HTTPGetRequest = function(url, handler) {
       if (this.readyState == 4) {
         if (this.status == 200) {
           // The request was successful, return the reply data
-          var returnedData = JSON.parse(this.responseText);
+          var returnedData = JSON.parse('{"err":""}');
+          try {
+            var returnedData = JSON.parse(this.responseText);
+          } catch(err) {
+            console.log(this.responseText);
+            returnedData = JSON.parse('{"err":"JSON.parse failed."}');
+          }
         } else {
           // The request failed, return error as JSON
           var returnedData = 
@@ -72,7 +78,13 @@ WebBuilder.prototype.HTTPPostRequest = function(url, form, handler) {
       if (this.readyState == 4) {
         if (this.status == 200) {
           // The request was successful, return the reply data
-          var returnedData = JSON.parse(this.responseText);
+          var returnedData = JSON.parse('{"err":""}');
+          try {
+            var returnedData = JSON.parse(this.responseText);
+          } catch(err) {
+            console.log(this.responseText);
+            returnedData = JSON.parse('{"err":"JSON.parse failed."}');
+          }
         } else {
           // The request failed, return error as JSON
           var returnedData = 
