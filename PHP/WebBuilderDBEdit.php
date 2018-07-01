@@ -36,7 +36,11 @@
         if ($field != "Reference" &&
           $field != "WBDBEditorFilter") {
           $cols[] = $field;
-          $vals[] = $_POST[$field];
+          if (isset($_POST[$field])) {
+            $vals[] = $_POST[$field];
+          } else {
+            $vals[] = "";
+          }
           $types .= "s";
         }
       }
