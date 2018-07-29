@@ -1119,11 +1119,13 @@ class WebBuilder {
     foreach ($longlat as $k => $v) {
       if ($v['longlat'] != '') {
         $ll = explode(',', $v['longlat']);
-        $long = (0.5 + $ll[0] / 360.0) * $widthMap - 0.5 * $sizeDot;
-        $lat = (1 - (0.5 + $ll[1] / 180.0)) * 
-          $heightMap - 0.5 * $sizeDot;
-        $block .= '<img style="top:' . $lat . 
-          'px; left:' . $long . 'px;">';
+        if ($ll[0] != "" && $ll[1] != "") {
+          $long = (0.5 + $ll[0] / 360.0) * $widthMap - 0.5 * $sizeDot;
+          $lat = (1 - (0.5 + $ll[1] / 180.0)) * 
+            $heightMap - 0.5 * $sizeDot;
+          $block .= '<img style="top:' . $lat . 
+            'px; left:' . $long . 'px;">';
+        }
       }
     }
     $block .= '</div>';
