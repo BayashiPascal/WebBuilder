@@ -12,7 +12,7 @@ function WebBuilder(PHPdata) {
     // Hook for the HTTP request returned value
     this._hookHTTPRequest = WBDefaultHandlerHTTPRequest;
     // Data received from PHP
-    this._PHPdata = JSON.parse(PHPdata);
+    this._PHPdata = PHPdata;
     // Init the DB editors
     this.DBEditorInit();
   } catch (err) {
