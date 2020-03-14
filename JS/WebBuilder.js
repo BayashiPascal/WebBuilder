@@ -571,3 +571,42 @@ WebBuilder.prototype.DBEditorNotifyChange = function(editor, field) {
   }
 }
 
+// ------------ Copy text to the clipboard
+// cf https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
+
+WebBuilder.prototype.SendTextToClipboard = function(text) {
+  if (!navigator.clipboard) {
+    this.SendTextToClipboardCb(text);
+    return;
+  }
+  navigator.clipboard.writeText(text).then(function() {
+    console.log('WebBuilder.SendTextToClipboard: Copying to clipboard was successful!');
+  }, function(err) {
+    console.error('WebBuilder.SendTextToClipboard: Could not copy text: ', err.stack);
+  });
+}
+
+WebBuilder.prototype.SendTextToClipboardCb = function(text) {
+  var textArea = document.createElement("textarea");
+  textArea.value = text;
+  
+  // Avoid scrolling to bottom
+  textArea.style.top = "0";
+  textArea.style.left = "0";
+  textArea.style.position = "fixed";
+
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+
+  try {
+    var successful = document.execCommand('copy');
+    var msg = successful ? 'successful' : 'unsuccessful';
+    console.log('WebBuilder.SendTextToClipboardCb : Copying text command was ' + msg);
+  } catch (err) {
+    console.error('WebBuilderSendTextToClipboardCb: Oops, unable to copy', err.stack);
+  }
+
+  document.body.removeChild(textArea);
+}
+
