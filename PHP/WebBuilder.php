@@ -862,7 +862,6 @@ class WebBuilder {
           'WebBuilder.ExecSelectSQL: invalid bind paramaters');
       }
     } else {
-      $this->CloseDB();
       throw new WBException($this->_config['SiteName'],
         $this->_config['DeveloperEmail'],
         'WebBuilder.ExecSelectSQL: invalid SQL command: ' . $sql);
