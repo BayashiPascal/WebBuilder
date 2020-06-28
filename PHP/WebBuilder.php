@@ -62,6 +62,8 @@ class WebBuilder {
     date_default_timezone_set($conf['TimeZone']);
     $this->_JSdata = '{}';
     $this->_DBEditors = array();
+    $this->_sessionName = 
+      array_keys($this->_config["DBModelLogin"]["tables"])[0];
   }
   
   function __destruct() {
@@ -169,8 +171,8 @@ class WebBuilder {
   }
   
   public function IsLogged() {
-    if (isset($_SESSION["WBCURRENTUSER"]) &&
-      $_SESSION["WBCURRENTUSER"] != "")
+    if (isset($_SESSION[$this->_sessionName . "Logged"]) &&
+      $_SESSION[$this->_sessionName . "Logged"] == true)
       return true;
     else
       return false;
@@ -493,6 +495,7 @@ class WebBuilder {
   public function ProcessURLArg() {
     if (isset($_GET["WBlogout"]) === true) {
       $_SESSION["WBCURRENTUSER"] = "";
+      $_SESSION[$this->_sessionName . "Logged"] = false;
     }
     if (isset($_GET["la"]) === true) {
       $this->SetLang($_GET["la"]);
@@ -526,9 +529,14 @@ class WebBuilder {
         $_POST["WBpasswd"]) === true) {
         // Memorize the current user for later use
         $_SESSION["WBCURRENTUSER"] = $_POST["WBlogin"];
+        // Memorize the login table to avoid login session to
+        // spread over all the website made with WebBuilder
+        // Must take care to choose a unique table name in DBModelLogin
+        $_SESSION[$this->_sessionName . "Logged"] = true;
       } else {
         // Reset the current user
         $_SESSION["WBCURRENTUSER"] = "";
+        $_SESSION[$this->_sessionName . "Logged"] = false;
       }
       // Delete the password for security
       $_POST["WBpasswd"] = '';
@@ -1242,14 +1250,16 @@ class WebBuilder {
 
   public function CreateUserLogin($login, $passwd) {
     $hash = password_hash($passwd, PASSWORD_DEFAULT);
-    $this->ExecInsertSQL('WBLogin', 
+    $tableName = array_keys($this->_config["DBModelLogin"]["tables"])[0];
+    $this->ExecInsertSQL($tableName, 
       array('Login', 'Hash'), 
       'ss', array($login, $hash));
   }
 
   public function CheckUserLogin($login, $passwd) {
+    $tableName = array_keys($this->_config["DBModelLogin"]["tables"])[0];
     $sql = 'SELECT Hash ';
-    $sql .= 'FROM WBLogin ';
+    $sql .= 'FROM ' . $tableName . ' ';
     $sql .= 'WHERE Login = ? ';
     $cols = array('hash');
     $types = 's';
