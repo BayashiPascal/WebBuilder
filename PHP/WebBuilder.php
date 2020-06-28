@@ -494,7 +494,7 @@ class WebBuilder {
 
   public function ProcessURLArg() {
     if (isset($_GET["WBlogout"]) === true) {
-      $_SESSION["WBCURRENTUSER"] = "";
+      $_SESSION["WBCURRENTUSER" . $this->_sessionName] = "";
       $_SESSION[$this->_sessionName . "Logged"] = false;
     }
     if (isset($_GET["la"]) === true) {
@@ -528,14 +528,15 @@ class WebBuilder {
       if ($this->CheckUserLogin($_POST["WBlogin"], 
         $_POST["WBpasswd"]) === true) {
         // Memorize the current user for later use
-        $_SESSION["WBCURRENTUSER"] = $_POST["WBlogin"];
+        $_SESSION["WBCURRENTUSER" . $this->_sessionName] = 
+          $_POST["WBlogin"];
         // Memorize the login table to avoid login session to
         // spread over all the website made with WebBuilder
         // Must take care to choose a unique table name in DBModelLogin
         $_SESSION[$this->_sessionName . "Logged"] = true;
       } else {
         // Reset the current user
-        $_SESSION["WBCURRENTUSER"] = "";
+        $_SESSION["WBCURRENTUSER" . $this->_sessionName] = "";
         $_SESSION[$this->_sessionName . "Logged"] = false;
       }
       // Delete the password for security
@@ -1257,18 +1258,25 @@ class WebBuilder {
   }
 
   public function CheckUserLogin($login, $passwd) {
-    $tableName = array_keys($this->_config["DBModelLogin"]["tables"])[0];
-    $sql = 'SELECT Hash ';
-    $sql .= 'FROM ' . $tableName . ' ';
+    $sql = 'SELECT Hash, Reference ';
+    $sql .= 'FROM ' . $this->_sessionName . ' ';
     $sql .= 'WHERE Login = ? ';
-    $cols = array('hash');
+    $cols = array('hash', 'ref');
     $types = 's';
     $params = array(&$login);
     $ret = $this->ExecSelectSQL($sql, $cols, $types, $params);
-    if (isset($ret[0]) && isset($ret[0]['hash']))
-      return password_verify($passwd, $ret[0]['hash']);
-    else
+    if (isset($ret[0]) && isset($ret[0]['hash'])) {
+      $verif = password_verify($passwd, $ret[0]['hash']);
+      if ($verif == true) {
+        $_SESSION["WBCURRENTUSERREF" . $this->_sessionName] = 
+          $ret[0]['ref'];
+        return true;
+      } else {
+        return false;
+      }
+    } else {
       return false;
+    }
   }
 
 };
