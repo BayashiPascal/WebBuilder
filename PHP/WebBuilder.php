@@ -808,7 +808,9 @@ class WebBuilder {
   public function ExecSelectSQL($sql, $cols, 
     $types = '', $params = array()) {
     if (strpos($sql, 'SELECT') === 0 || 
-      strpos($sql, 'select') === 0) {
+      strpos($sql, 'select') === 0 ||
+      strpos($sql, '(SELECT') === 0 ||
+      strpos($sql, '(select') === 0) {
       if (is_array($params) == true && is_array($cols) == true && 
         sizeof($params) == strlen($types)) {
         $this->ConnectDB();
