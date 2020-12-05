@@ -1350,6 +1350,8 @@ function WebBuilderErrorSilentHandler(
 
 function WBstringifyHTML($var, $shift = 0) {
   $block ='';
+  if ($shift >= 20)
+    return "...(following content skipped)";
   if (is_array($var) || is_object($var)) {
     if (sizeof($var) != 0) {
       $block .= '[<br>';
